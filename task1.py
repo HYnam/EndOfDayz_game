@@ -21,7 +21,8 @@ class AbstractGrid(tk.Canvas):
         """
         Returns the bounding box for the (row, column) position
         """
-        pass
+        position = (self.rows, self.cols)
+        return position
 
     def pixel_to_position(self, pixel):
         """
