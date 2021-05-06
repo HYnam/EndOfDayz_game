@@ -15,8 +15,8 @@ from constants import TASK, MAP_FILE
 # Uncomment the following imports to import the view classes that represent
 # the GUI for each of the tasks that you implement in the assignment.
 from task1 import BasicGraphicalInterface
-from task2 import ImageGraphicalInterface
-from csse7030 import MastersGraphicalInterface
+#from task2 import ImageGraphicalInterface
+#from csse7030 import MastersGraphicalInterface
 
 def main() -> None:
     """Entry point to gameplay."""

@@ -16,3 +16,27 @@ class AbstractGrid(tk.Canvas):
         self.cols = cols
         self.width = width
         self.height = height
+
+    def get_bbox(self, position):
+        """
+        Returns the bounding box for the (row, column) position
+        """
+        pass
+
+    def pixel_to_position(self, pixel):
+        """
+        Converts the (x, y) pixel position (in graphics units) to a (row, column) position.
+        """
+        pass
+
+    def get_position_center(self, position):
+        """
+        Gets the graphics coordinates for the center of the cell at the given (row, column) position.
+        """
+        pass
+
+    def annotate_position(self, position, text):
+        """
+        Annotates the center of the cell at the given (row, column) position with the provided text.
+        """
+        pass
