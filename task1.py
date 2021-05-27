@@ -34,7 +34,9 @@ class AbstractGrid(tk.Canvas):
         """
         Converts the (x, y) pixel position (in graphics units) to a (row, column) position.
         """
-        pass
+        x, y = pixel
+        position = (y // self._cell_height, x // self._cell_width)
+        return position
 
     def get_position_center(self, position):
         """
