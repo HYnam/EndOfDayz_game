@@ -55,5 +55,10 @@ class AbstractGrid(tk.Canvas):
     def annotate_position(self, position, text):
         """
         Annotates the center of the cell at the given (row, column) position with the provided text.
+        
+        Args:
+            position: (row, column)
+            text: string for annotation
+            **kwargs
         """
-        pass
+        self.create_text(self.get_position_center(position), text=text, **kwargs)
