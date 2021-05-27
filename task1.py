@@ -41,8 +41,16 @@ class AbstractGrid(tk.Canvas):
     def get_position_center(self, position):
         """
         Gets the graphics coordinates for the center of the cell at the given (row, column) position.
+        
+        Args:
+            position: (row, column)
+
+        Returns:
+            (x, y)
         """
-        pass
+        x_min, y_min, x_max, y_max = self.get_bbox(position)
+        position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
+        return position_center
 
     def annotate_position(self, position, text):
         """
