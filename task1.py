@@ -316,3 +316,28 @@ class BasicGraphicalInterface:
                 self.draw(self._game)
             else:
                 print(NO_ZOMBIE_MESSAGE)
+
+    def quit_game(self):
+        """
+        determine whether to quit the game
+        Returns:
+
+        """
+        quit_game = False
+        message = ""
+        if self._game.has_won():
+            message = WIN_MESSAGE
+            quit_game = True
+
+        if self._game.has_lost():
+            message = LOSE_MESSAGE
+            quit_game = True
+
+        if quit_game:
+            self._master.after_cancel(self._step_schedule)
+            messagebox.showinfo(title=message, message=message)
+            if messagebox.askyesno("Quit?", "Are you sure you want to quit?"):
+                self._master.destroy()
+        return quit_game
+
+    
