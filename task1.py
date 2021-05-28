@@ -382,3 +382,18 @@ class BasicGraphicalInterface:
 
         self._grid.unbind_all("<Any-KeyPress>")
         self._grid.bind_all("<Any-KeyPress>", lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
+
+    def play(self, game):
+        """
+        Binds events and initialises gameplay.
+        Args:
+            game:
+        """
+        self._game = game
+        self.draw(self._game)
+        self._step(self._game)
+
+        inventory = game.get_player().get_inventory()
+        self._inventory.bind("<Button-1>", lambda event, func=self._inventory_click, inventory=inventory: self._inventory_click(event, inventory))
+
+        self._master.mainloop()
