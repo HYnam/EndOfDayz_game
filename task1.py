@@ -1,14 +1,30 @@
+import a2_solution as a2
+from constants import *
 import tkinter as tk
 import tkinter.messagebox as messagebox
 
-import a2_solution as a2
-from constants import *
 
 class AbstractGrid(tk.Canvas):
     """
-    provides base functionality for other view classes. An AbstractGrid can be thought of as a grid.
+    AbstractGrid is an abstract view class which inherits from tk.Canvas and provides base
+    functionality for other view classes.
+    An AbstractGrid can be thought of as a grid with a set number of rows and columns,
+    which supports creation of text at specific positions based on row and column.
+    The number of rows may differ from the number of columns,
+    and the cells may be non-square
     """
+
     def __init__(self, master, rows, cols, width, height, **kwargs):
+        """
+
+        Args:
+            master:
+            rows: number of rows
+            cols: number of cols
+            width: the width of the grid in pixels
+            height: the height of the grid in pixels
+            **kwargs:
+        """
         self._master = master
         self._rows = rows
         self._cols = cols
@@ -21,7 +37,13 @@ class AbstractGrid(tk.Canvas):
 
     def get_bbox(self, position):
         """
-        Returns the bounding box for the (row, column) position
+        Returns the bounding box for the position
+        Args:
+            position: (row, column)
+
+        Returns:
+            Returns the bounding box for the (row, column) position, in the form (x min, y min, x max, y max).
+
         """
         x, y = position
         x_min = x * self._cell_width
@@ -32,36 +54,47 @@ class AbstractGrid(tk.Canvas):
 
     def pixel_to_position(self, pixel):
         """
-        Converts the (x, y) pixel position (in graphics units) to a (row, column) position.
+         Converts the (x, y) pixel position (in graphics units) to a (row, column) position.
+        Args:
+            pixel: position (x, y)
+
+        Returns:
+            position (row, column)
+
         """
         x, y = pixel
+        # row = y / cell_height
+        # column = x / cell_width
         position = (y // self._cell_height, x // self._cell_width)
         return position
 
     def get_position_center(self, position):
         """
-        Gets the graphics coordinates for the center of the cell at the given (row, column) position.
-        
+         Gets the graphics coordinates for the center of the cell at the given (row, column) position
         Args:
             position: (row, column)
 
         Returns:
             (x, y)
+
         """
         x_min, y_min, x_max, y_max = self.get_bbox(position)
         position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
         return position_center
 
-    def annotate_position(self, position, text):
+    def annotate_position(self, position, text, **kwargs):
         """
-        Annotates the center of the cell at the given (row, column) position with the provided text.
-        
+        Annotates the center of the cell at the given (row, column) position with the provided text
         Args:
             position: (row, column)
             text: string for annotation
             **kwargs
+
+        Returns:
+
         """
         self.create_text(self.get_position_center(position), text=text, **kwargs)
+
 
 class BasicMap(AbstractGrid):
     """
@@ -97,9 +130,13 @@ class BasicMap(AbstractGrid):
         Args:
             position: (row, col)
             tile_type: entity type, find the color in ENTITY_COLOURS
+
+        Returns:
+
         """
         self.create_rectangle(self.get_bbox(position), fill=ENTITY_COLOURS[tile_type])
         self.annotate_position(position, tile_type, fill=self._entity_fg[tile_type])
+
 
 class InventoryView(AbstractGrid):
     """
@@ -130,15 +167,19 @@ class InventoryView(AbstractGrid):
          Draws the inventory label and current items with their remaining lifetimes
         Args:
             inventory: the player's inventory
+
+        Returns:
+
         """
         self.delete("all")
         self.draw_label()
         for index, item in enumerate(inventory.get_items()):
             self.draw_pickup(index+1, item, item.is_active())
-    
+
     def draw_label(self):
         """
-        Draw Inventory label and its size
+        Returns:
+
         """
         x_min = 0
         y_min = 0
@@ -155,6 +196,9 @@ class InventoryView(AbstractGrid):
         Args:
             row: row
             item: Pickup
+
+        Returns:
+
         """
         pickup_text = {
             GARLIC: "Garlic",
@@ -179,6 +223,7 @@ class InventoryView(AbstractGrid):
 
         Returns:
             whether the item can be activated or deactivated
+
         """
         row, col = self.pixel_to_position(pixel)
         if row > len(inventory.get_items()):
@@ -197,6 +242,7 @@ class InventoryView(AbstractGrid):
                     inventory.get_items()[index].toggle_active()
                     self.draw_pickup(row, pickup, pickup.is_active())
         return False
+
 
 class BasicGraphicalInterface:
     """
@@ -260,6 +306,9 @@ class BasicGraphicalInterface:
         Tap on the keyboard input
         Args:
             event:
+
+        Returns:
+
         """
         direction = event.char.upper()
         if is_fire:
@@ -388,6 +437,9 @@ class BasicGraphicalInterface:
         Binds events and initialises gameplay.
         Args:
             game:
+
+        Returns:
+
         """
         self._game = game
         self.draw(self._game)
@@ -397,3 +449,4 @@ class BasicGraphicalInterface:
         self._inventory.bind("<Button-1>", lambda event, func=self._inventory_click, inventory=inventory: self._inventory_click(event, inventory))
 
         self._master.mainloop()
+
