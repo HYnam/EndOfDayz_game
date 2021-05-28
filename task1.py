@@ -193,12 +193,13 @@ class InventoryView(AbstractGrid):
         col = 0
         position = (col, row)
         self.create_rectangle(self.get_bbox(position), fill=self._status_color[is_active], outline=self._status_color[is_active])
-        self.annotate_position(position, pickup_text[item.display()], fill=self._fg_color[is_active])
+        # Fill in status color as active in rectangle 
+        self.annotate_position(position, pickup_text[item.display()], fill=self._fg_color[is_active])   # Display picked up items with color
 
         col = 1
         position = (col, row)
         self.create_rectangle(self.get_bbox(position), fill=self._status_color[is_active], outline=self._status_color[is_active])
-        self.annotate_position(position, str(item.get_lifetime()), fill=self._fg_color[is_active])
+        self.annotate_position(position, str(item.get_lifetime()), fill=self._fg_color[is_active])  # Display lifetime of the picked up items
 
     def toggle_item_activation(self, pixel, inventory):
         """
@@ -217,11 +218,11 @@ class InventoryView(AbstractGrid):
 
         if inventory.any_active():
             for index, pickup in enumerate(inventory.get_items()):
-                if pickup.is_active() and index + 1 != row:
-                    return True
+                if pickup.is_active() and index + 1 != row:     # Check if in-range or out range
+                    return True     # In range then true (actived)
                 if pickup.is_active() and index + 1 == row:
-                    inventory.get_items()[index].toggle_active()
-                    self.draw_pickup(row, pickup, pickup.is_active())
+                    inventory.get_items()[index].toggle_active()    
+                    self.draw_pickup(row, pickup, pickup.is_active())   # Get items and pick up is active
         else:
             for index, pickup in enumerate(inventory.get_items()):
                 if index + 1 == row:
@@ -237,7 +238,6 @@ class BasicGraphicalInterface:
     """
     def __init__(self, root, size):
         """
-
         Args:
             root: the root window
             size: the number of rows (= number of columns) in the game map
@@ -256,8 +256,8 @@ class BasicGraphicalInterface:
 
         self._grid_width = self._grid_height = size * CELL_SIZE
         self._width = self._grid_width + INVENTORY_WIDTH
-        self._main_container = tk.Canvas(self._master, width=self._width, height=self._grid_height)
-        self._main_container.pack(side=tk.TOP, fill=tk.BOTH)
+        self._main_container = tk.Canvas(self._master, width=self._width, height=self._grid_height)     # Grid size
+        self._main_container.pack(side=tk.TOP, fill=tk.BOTH)    # Position 
 
         self._grid = BasicMap(self._main_container, size=size, bg=LIGHT_BROWN)
         self._grid.pack(side=tk.LEFT)
@@ -269,32 +269,27 @@ class BasicGraphicalInterface:
         """
         Clears and redraws the view based on the current game state.
         Args:
-            game:
-
-        Returns:
-
+            game
         """
-        self._grid.delete("all")
+        self._grid.delete("all")    # Reset the grid for every game
 
         for entity_position, tile_type in game.get_grid().get_mapping().items():
             x = entity_position.get_x()
             y = entity_position.get_y()
-            self._grid.draw_entity((x, y), tile_type.display())
+            self._grid.draw_entity((x, y), tile_type.display()) # Draw entity and display title
 
         inventory = game.get_player().get_inventory()
         self._inventory.draw(inventory=inventory)
 
         self._grid.unbind_all("<Any-KeyPress>")
         self._grid.bind_all("<Any-KeyPress>", lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
+        # Press to fire
 
     def key_press(self, event, is_fire):
         """
         Tap on the keyboard input
         Args:
             event:
-
-        Returns:
-
         """
         direction = event.char.upper()
         if is_fire:
@@ -307,19 +302,19 @@ class BasicGraphicalInterface:
         Handles moving the player and redrawing the game.
         Args:
             direction: direction
-
-        Returns:
-
         """
         if direction in DIRECTIONS:
             offset = self._game.direction_to_offset(direction)
             if offset is not None:
-                self._game.move_player(offset)
+                self._game.move_player(offset)  # Move player to offset postion 
             self.draw(self._game)
 
             self.quit_game()
 
     def is_fire(self):
+        """
+        Return inventory that is active to fire
+        """
         inventory = self._game.get_player().get_inventory()
         return inventory.has_active(CROSSBOW)
 
@@ -328,9 +323,6 @@ class BasicGraphicalInterface:
         Handles the fire of crossbow and redrawing the game.
         Args:
             direction: direction
-
-        Returns:
-
         """
         if direction in DIRECTIONS:
             # function handle_action in a2.solution.py
@@ -355,8 +347,6 @@ class BasicGraphicalInterface:
     def quit_game(self):
         """
         determine whether to quit the game
-        Returns:
-
         """
         quit_game = False
         message = ""
@@ -370,9 +360,9 @@ class BasicGraphicalInterface:
 
         if quit_game:
             self._master.after_cancel(self._step_schedule)
-            messagebox.showinfo(title=message, message=message)
+            messagebox.showinfo(title=message, message=message) # Show message in the box
             if messagebox.askyesno("Quit?", "Are you sure you want to quit?"):
-                self._master.destroy()
+                self._master.destroy()  # Destroy all data and quit game
         return quit_game
 
     def _step(self, game):
@@ -382,17 +372,14 @@ class BasicGraphicalInterface:
         The step method is called every second.
 
         Args:
-            game:
-
-        Returns:
-
+            game
         """
         self._master.update()
         game.step()
         self.draw(game)
 
         if not self.quit_game():
-            self._step_schedule = self._master.after(STEP_FPS, self._step, game)
+            self._step_schedule = self._master.after(STEP_FPS, self._step, game)    # Run function every second if not quit game
 
     def _inventory_click(self, event, inventory):
         """
@@ -404,9 +391,6 @@ class BasicGraphicalInterface:
         Args:
             event: click event
             inventory: inventory
-
-        Returns:
-
         """
         position = (event.x, event.y)
         if self._inventory.toggle_item_activation(position, inventory):
@@ -422,10 +406,7 @@ class BasicGraphicalInterface:
         """
         Binds events and initialises gameplay.
         Args:
-            game:
-
-        Returns:
-
+            game
         """
         self._game = game
         self.draw(self._game)
