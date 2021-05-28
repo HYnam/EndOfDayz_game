@@ -148,3 +148,24 @@ class InventoryView(AbstractGrid):
         self.create_rectangle(position, fill=LIGHT_PURPLE, outline=LIGHT_PURPLE)
         position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
         self.create_text(position_center, text="Inventory", fill=DARK_PURPLE, font="None 14")
+
+    def draw_pickup(self, row, item, is_active):
+        """
+        draw the row in inventory view according to the given index
+        Args:
+            row: row
+            item: Pickup
+        """
+        pickup_text = {
+            GARLIC: "Garlic",
+            CROSSBOW: "Crossbow"
+        }
+        col = 0
+        position = (col, row)
+        self.create_rectangle(self.get_bbox(position), fill=self._status_color[is_active], outline=self._status_color[is_active])
+        self.annotate_position(position, pickup_text[item.display()], fill=self._fg_color[is_active])
+
+        col = 1
+        position = (col, row)
+        self.create_rectangle(self.get_bbox(position), fill=self._status_color[is_active], outline=self._status_color[is_active])
+        self.annotate_position(position, str(item.get_lifetime()), fill=self._fg_color[is_active])
