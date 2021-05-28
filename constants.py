@@ -1,8 +1,10 @@
 """ Constants """
 
 ##---- Configurations ----##
-TASK = 3
+TASK = 2
 MAP_FILE = 'maps/basic4.txt'
+STEP_FPS = 1000
+TIME_FPS = 1000
 
 
 ##---- Assignment 2 Constants ----##
@@ -55,7 +57,9 @@ DARKEST_PURPLE = '#371D33'
 LIGHT_BROWN = MAP_BACKGROUND_COLOUR = '#B5B28F'
 LIGHT_GREEN = '#B8D58E'
 LIGHT_PURPLE = '#E5E1EF'
-CELL_SIZE = 50
+WHITE = '#FFFFFF'
+BLACK = '#000000'
+CELL_SIZE = 40
 
 ENTITY_COLOURS = {
 	PLAYER: DARK_PURPLE,
@@ -88,3 +92,4 @@ MAX_ALLOWED_HIGH_SCORES = 3
 
 # CSSE7030 Task Constants
 TIME_MACHINE = 'M'
+
