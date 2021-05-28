@@ -359,3 +359,26 @@ class BasicGraphicalInterface:
         if not self.quit_game():
             self._step_schedule = self._master.after(STEP_FPS, self._step, game)
 
+    def _inventory_click(self, event, inventory):
+        """
+        This method should be called when the user left clicks on inventory view.
+
+        It must handle activating or deactivating the clicked item (if one exists) and
+        update both the model and the view accordingly.
+
+        Args:
+            event: click event
+            inventory: inventory
+
+        Returns:
+
+        """
+        position = (event.x, event.y)
+        if self._inventory.toggle_item_activation(position, inventory):
+            messagebox.showinfo(title="Alert", message="Only one item may be active at any given time!")
+            return
+
+        self._inventory.bind("<Button-1>", lambda event, func=self._inventory_click, inventory=inventory: self._inventory_click(event, inventory))
+
+        self._grid.unbind_all("<Any-KeyPress>")
+        self._grid.bind_all("<Any-KeyPress>", lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
