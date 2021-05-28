@@ -8,15 +8,16 @@ class AbstractGrid(tk.Canvas):
     """
     AbstractGrid is an abstract view class which inherits from tk.Canvas and provides base
     functionality for other view classes.
+    
     An AbstractGrid can be thought of as a grid with a set number of rows and columns,
     which supports creation of text at specific positions based on row and column.
+    
     The number of rows may differ from the number of columns,
     and the cells may be non-square
     """
 
     def __init__(self, master, rows, cols, width, height, **kwargs):
         """
-
         Args:
             master:
             rows: number of rows
@@ -63,8 +64,6 @@ class AbstractGrid(tk.Canvas):
 
         """
         x, y = pixel
-        # row = y / cell_height
-        # column = x / cell_width
         position = (y // self._cell_height, x // self._cell_width)
         return position
 
@@ -78,8 +77,8 @@ class AbstractGrid(tk.Canvas):
             (x, y)
 
         """
-        x_min, y_min, x_max, y_max = self.get_bbox(position)
-        position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
+        x_min, y_min, x_max, y_max = self.get_bbox(position)  
+        position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)    # Find the center position 
         return position_center
 
     def annotate_position(self, position, text, **kwargs):
@@ -89,12 +88,9 @@ class AbstractGrid(tk.Canvas):
             position: (row, column)
             text: string for annotation
             **kwargs
-
-        Returns:
-
         """
-        self.create_text(self.get_position_center(position), text=text, **kwargs)
-
+        self.create_text(self.get_position_center(position), text=text, **kwargs)   # Create text on center postition 
+    
 
 class BasicMap(AbstractGrid):
     """
@@ -104,7 +100,6 @@ class BasicMap(AbstractGrid):
     """
     def __init__(self, master, size, **kwargs):
         """
-
         Args:
             master:
             size:  the number of rows (= number of columns) in the grid
@@ -125,17 +120,15 @@ class BasicMap(AbstractGrid):
 
     def draw_entity(self, position, tile_type):
         """
-         Draws the entity with tile type at the given position using a coloured rectangle with
-         superimposed text identifying the entity
+        Draws the entity with tile type at the given position using a coloured rectangle with
+        superimposed text identifying the entity
+
         Args:
             position: (row, col)
             tile_type: entity type, find the color in ENTITY_COLOURS
-
-        Returns:
-
         """
-        self.create_rectangle(self.get_bbox(position), fill=ENTITY_COLOURS[tile_type])
-        self.annotate_position(position, tile_type, fill=self._entity_fg[tile_type])
+        self.create_rectangle(self.get_bbox(position), fill=ENTITY_COLOURS[tile_type])  # Colour the rectangle for different entity
+        self.annotate_position(position, tile_type, fill=self._entity_fg[tile_type])    # Text the entity in the center of the rectangle
 
 
 class InventoryView(AbstractGrid):
@@ -167,28 +160,24 @@ class InventoryView(AbstractGrid):
          Draws the inventory label and current items with their remaining lifetimes
         Args:
             inventory: the player's inventory
-
-        Returns:
-
         """
         self.delete("all")
         self.draw_label()
         for index, item in enumerate(inventory.get_items()):
-            self.draw_pickup(index+1, item, item.is_active())
+            self.draw_pickup(index+1, item, item.is_active())   # Picked up
 
     def draw_label(self):
         """
-        Returns:
-
+        Draw inventory label 
         """
         x_min = 0
         y_min = 0
         x_max = self._cell_width * self._cols
         y_max = self._cell_height
         position = (x_min, y_min, x_max, y_max)
-        self.create_rectangle(position, fill=LIGHT_PURPLE, outline=LIGHT_PURPLE)
-        position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
-        self.create_text(position_center, text="Inventory", fill=DARK_PURPLE, font="None 14")
+        self.create_rectangle(position, fill=LIGHT_PURPLE, outline=LIGHT_PURPLE)    # Create rectangle on given position with colors
+        position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)    # Calculate center of rectangle
+        self.create_text(position_center, text="Inventory", fill=DARK_PURPLE, font="None 14")   # Text "inventory" in the center of rectangle
 
     def draw_pickup(self, row, item, is_active):
         """
@@ -196,9 +185,6 @@ class InventoryView(AbstractGrid):
         Args:
             row: row
             item: Pickup
-
-        Returns:
-
         """
         pickup_text = {
             GARLIC: "Garlic",
