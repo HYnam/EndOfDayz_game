@@ -245,7 +245,7 @@ class BasicGraphicalInterface:
         self._master = root
         self._size = size
 
-        self._master.title("EndOfDayZ")
+        self._master.title(TITLE)
 
         self._game = None
         self._step_schedule = None
@@ -282,7 +282,8 @@ class BasicGraphicalInterface:
         self._inventory.draw(inventory=inventory)
 
         self._grid.unbind_all("<Any-KeyPress>")
-        self._grid.bind_all("<Any-KeyPress>", lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
+        self._grid.bind_all("<Any-KeyPress>", 
+                            lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
         # Press to fire
 
     def key_press(self, event, is_fire):
@@ -397,10 +398,12 @@ class BasicGraphicalInterface:
             messagebox.showinfo(title="Alert", message="Only one item may be active at any given time!")
             return
 
-        self._inventory.bind("<Button-1>", lambda event, func=self._inventory_click, inventory=inventory: self._inventory_click(event, inventory))
+        self._inventory.bind("<Button-1>", 
+                            lambda event, func=self._inventory_click, inventory=inventory: self._inventory_click(event, inventory))
 
         self._grid.unbind_all("<Any-KeyPress>")
-        self._grid.bind_all("<Any-KeyPress>", lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
+        self._grid.bind_all("<Any-KeyPress>", 
+                            lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
 
     def play(self, game):
         """
