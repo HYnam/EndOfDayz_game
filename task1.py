@@ -136,4 +136,15 @@ class InventoryView(AbstractGrid):
         for index, item in enumerate(inventory.get_items()):
             self.draw_pickup(index+1, item, item.is_active())
     
-    
+    def draw_label(self):
+        """
+        Draw Inventory label and its size
+        """
+        x_min = 0
+        y_min = 0
+        x_max = self._cell_width * self._cols
+        y_max = self._cell_height
+        position = (x_min, y_min, x_max, y_max)
+        self.create_rectangle(position, fill=LIGHT_PURPLE, outline=LIGHT_PURPLE)
+        position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
+        self.create_text(position_center, text="Inventory", fill=DARK_PURPLE, font="None 14")
