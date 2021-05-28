@@ -676,10 +676,10 @@ class ImageGraphicalInterface:
 
         records_sorted = []
         for record in records:
-            record = record.strip("\n").split(",")  # Sort out every record with newline and commar
+            record = record.strip("\n").split(",")  # Sort out every record with commar
             records_sorted.append((str(record[0]), strtotime(record[1])))
 
-        records_sorted.append((player_name, self._time_count))
+        records_sorted.append((player_name, self._time_count))  # Append record player name and time used
         records_sorted = sorted(records_sorted, key=lambda x: x[1])[:MAX_ALLOWED_HIGH_SCORES:]
         with open(HIGH_SCORES_FILE, "w") as file:
             file.write("".join("{},{}\n".format(x[0], timetostr(x[1])) for x in records_sorted))
@@ -690,22 +690,21 @@ class ImageGraphicalInterface:
     def lose_game(self):
         """
         after the game lost
-        Returns:
-
         """
         self.stop_schedule()
         if messagebox.askyesno(title=LOSE_MESSAGE, message="Would you like to play again?"):
             self.restart_game()
 
     def quit_game(self):
+        """
+        Quit game
+        """
         if messagebox.askyesno(title="Quit Game?", message="Are you sure you want to quit?"):
             self._master.destroy()
 
     def restart_game(self):
         """
         start a new game
-        Returns:
-
         """
         self._grid.delete("all")
         self.stop_schedule()
@@ -717,29 +716,26 @@ class ImageGraphicalInterface:
     def save_game(self):
         """
         save game to file
-
-        Returns:
-
         """
         try:
             self.stop_schedule()
             self._grid.unbind_all("<Any-KeyPress>")
 
-            filename = filedialog.asksaveasfilename(title="Save Game", defaultextension=".txt")
+            filename = filedialog.asksaveasfilename(title="Save Game", defaultextension=".txt") # Popup save game
 
-            save_information = [self._time_count, self._moves_made]
+            save_information = [self._time_count, self._moves_made] # Store time and move
 
             temp_dict = {}
             inventory = self._game.get_player().get_inventory()
             for pickup in inventory.get_items():
-                temp_dict.update({pickup.display(): pickup.get_lifetime()})
-            inventories = str(temp_dict)
-            save_information.append(inventories)
+                temp_dict.update({pickup.display(): pickup.get_lifetime()}) # Update the inventory pick up and lifetime
+            inventories = str(temp_dict)    # Change dict to str 
+            save_information.append(inventories)    # Append the str 
 
-            temp_dict.clear()
+            temp_dict.clear()   # Clear record in dict
             maps = self._game.get_grid().get_mapping()
             for position, entity in maps.items():
-                temp_dict.update({(position.get_x(), position.get_y()): entity.display()})
+                temp_dict.update({(position.get_x(), position.get_y()): entity.display()})  # Update position of entity and display it
 
             maps = ""
             for y in range(self._size):
@@ -761,13 +757,12 @@ class ImageGraphicalInterface:
 
     def load_game(self):
         """
-        Returns:
-
+        Load the game
         """
         try:
             self.stop_schedule()
             filename = filedialog.askopenfilename()
-            with open(filename) as game_file:
+            with open(filename) as game_file:   # Open file 
                 game_information = game_file.readlines()
 
             grid_information = ""
@@ -785,7 +780,7 @@ class ImageGraphicalInterface:
                 else:
                     grid_information = "".join([grid_information, line])
 
-            with open(filename, "w") as map_file:
+            with open(filename, "w") as map_file:   # Open the file and write
                 map_file.write(grid_information)
 
             self._game = a2.advanced_game(filename)
@@ -794,8 +789,8 @@ class ImageGraphicalInterface:
                     pickup = a2.Garlic()
                 if tile_type is CROSSBOW:
                     pickup = a2.Crossbow()
-                pickup.set_lifetime(lifetime=lifetime)
-                self._game.get_player().get_inventory().add_item(pickup)
+                pickup.set_lifetime(lifetime=lifetime)  # Life time of the pick up
+                self._game.get_player().get_inventory().add_item(pickup)    # Play with pick ups
 
             with open(filename, "w+") as origin_file:
                 origin_file.write(extra_information + grid_information)
@@ -808,20 +803,18 @@ class ImageGraphicalInterface:
     def high_scores(self):
         """
         Selecting this option should create a top level window displaying an ordered leaderboard
-        of the best time achieved by users in the game
-        Returns:
-
+        of the best time achieved by users in the game.
         """
         high_scores_widget = tk.Toplevel(self._master)
         title = tk.Label(high_scores_widget, text="High Scores", fg=WHITE, font="None 16 bold", bg=DARKEST_PURPLE)
-        high_scores_widget.title("Top 3")
-        title.pack(side=tk.TOP, fill=tk.BOTH)
+        high_scores_widget.title("Top 3")   # set title
+        title.pack(side=tk.TOP, fill=tk.BOTH)   # Show tyling of high_score_widget
 
         try:
-            with open(HIGH_SCORES_FILE) as record_file:
-                records = record_file.readlines()
+            with open(HIGH_SCORES_FILE) as record_file: # Open file
+                records = record_file.readlines()   # Read file
         except IOError:
-            open(HIGH_SCORES_FILE, "w+").close()
+            open(HIGH_SCORES_FILE, "w+").close()    # write file
             records = []
 
         records_sorted = []
@@ -830,15 +823,18 @@ class ImageGraphicalInterface:
             records_sorted.append((str(record[0]), record[1]))
 
         try:
-            first = tk.Label(high_scores_widget, text="{}: {}".format(records_sorted[0][0], records_sorted[0][1]))
+            first = tk.Label(high_scores_widget,
+                            text="{}: {}".format(records_sorted[0][0], records_sorted[0][1]))
             first.pack(side=tk.TOP)
-            second = tk.Label(high_scores_widget, text="{}: {}".format(records_sorted[1][0], records_sorted[1][1]))
+            second = tk.Label(high_scores_widget, 
+                            text="{}: {}".format(records_sorted[1][0], records_sorted[1][1]))
             second.pack(side=tk.TOP)
-            third = tk.Label(high_scores_widget, text="{}: {}".format(records_sorted[2][0], records_sorted[2][1]))
+            third = tk.Label(high_scores_widget, 
+                            text="{}: {}".format(records_sorted[2][0], records_sorted[2][1]))
             third.pack()
         except Exception as e:
             pass
-        done_button = tk.Button(high_scores_widget, text="Done", command=high_scores_widget.destroy)
+        done_button = tk.Button(high_scores_widget, text="Done", command=high_scores_widget.destroy)    # Click done to destroy record
         done_button.pack(side=tk.TOP)
 
 
