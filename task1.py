@@ -197,3 +197,39 @@ class InventoryView(AbstractGrid):
                     inventory.get_items()[index].toggle_active()
                     self.draw_pickup(row, pickup, pickup.is_active())
         return False
+
+class BasicGraphicalInterface:
+    """
+    The BasicGraphicalInterface should manage the overall view (i.e. constructing the three
+    major widgets) and event handling.
+    """
+    def __init__(self, root, size):
+        """
+
+        Args:
+            root: the root window
+            size: the number of rows (= number of columns) in the game map
+        """
+        self._master = root
+        self._size = size
+
+        self._master.title("EndOfDayZ")
+
+        self._game = None
+        self._step_schedule = None
+
+        self._title = tk.Label(self._master, text="End Of DayZ", bg=DARK_PURPLE,
+                               font="None 16 bold", fg=WHITE)
+        self._title.pack(side=tk.TOP, fill=tk.BOTH)
+
+        self._grid_width = self._grid_height = size * CELL_SIZE
+        self._width = self._grid_width + INVENTORY_WIDTH
+        self._main_container = tk.Canvas(self._master, width=self._width, height=self._grid_height)
+        self._main_container.pack(side=tk.TOP, fill=tk.BOTH)
+
+        self._grid = BasicMap(self._main_container, size=size, bg=LIGHT_BROWN)
+        self._grid.pack(side=tk.LEFT)
+
+        self._inventory = InventoryView(self._main_container, rows=size, bg=LIGHT_PURPLE)
+        self._inventory.pack(side=tk.LEFT)
+
