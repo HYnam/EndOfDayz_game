@@ -100,3 +100,29 @@ class BasicMap(AbstractGrid):
         """
         self.create_rectangle(self.get_bbox(position), fill=ENTITY_COLOURS[tile_type])
         self.annotate_position(position, tile_type, fill=self._entity_fg[tile_type])
+
+class InventoryView(AbstractGrid):
+    """
+    InventoryView is a view class which inherits from AbstractGrid and displays the items the player
+    has in their inventory.
+    """
+    def __init__(self, master, rows, **kwargs):
+        """
+
+        Args:
+            master:
+            rows:  the number of rows in the game map
+            **kwargs: any additional named arguments supported by tk.Canvas
+        """
+        height = rows * CELL_SIZE
+        self._status_color = {
+            True: DARK_PURPLE,
+            False: LIGHT_PURPLE
+        }
+        self._fg_color = {
+            True: WHITE,
+            False: DARK_PURPLE
+        }
+        super().__init__(master=master, rows=rows, cols=2, width=INVENTORY_WIDTH, height=height, **kwargs)
+
+    
