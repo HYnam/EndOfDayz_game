@@ -62,3 +62,30 @@ class AbstractGrid(tk.Canvas):
             **kwargs
         """
         self.create_text(self.get_position_center(position), text=text, **kwargs)
+
+class BasicMap(AbstractGrid):
+    """
+    BasicMap is a view class which inherits from AbstractGrid.
+
+    Entities are drawn on the map using coloured rectangles at different (row, column) positions.
+    """
+    def __init__(self, master, size, **kwargs):
+        """
+
+        Args:
+            master:
+            size:  the number of rows (= number of columns) in the grid
+            **kwargs:
+        """
+        width = size * CELL_SIZE
+        height = size * CELL_SIZE
+        self._size = size
+        self._entity_fg = {
+            PLAYER: WHITE,
+            HOSPITAL: WHITE,
+            ZOMBIE: BLACK,
+            GARLIC: BLACK,
+            TRACKING_ZOMBIE: BLACK,
+            CROSSBOW: BLACK
+        }
+        super().__init__(master=master, rows=size, cols=size, width=width, height=height, **kwargs)
