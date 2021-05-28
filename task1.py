@@ -340,4 +340,22 @@ class BasicGraphicalInterface:
                 self._master.destroy()
         return quit_game
 
-    
+    def _step(self, game):
+        """
+        The step method triggers the step method for the game and updates the view accordingly.
+
+        The step method is called every second.
+
+        Args:
+            game:
+
+        Returns:
+
+        """
+        self._master.update()
+        game.step()
+        self.draw(game)
+
+        if not self.quit_game():
+            self._step_schedule = self._master.after(STEP_FPS, self._step, game)
+
