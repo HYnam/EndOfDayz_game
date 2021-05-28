@@ -233,3 +233,24 @@ class BasicGraphicalInterface:
         self._inventory = InventoryView(self._main_container, rows=size, bg=LIGHT_PURPLE)
         self._inventory.pack(side=tk.LEFT)
 
+    def draw(self, game):
+        """
+        Clears and redraws the view based on the current game state.
+        Args:
+            game:
+
+        Returns:
+
+        """
+        self._grid.delete("all")
+
+        for entity_position, tile_type in game.get_grid().get_mapping().items():
+            x = entity_position.get_x()
+            y = entity_position.get_y()
+            self._grid.draw_entity((x, y), tile_type.display())
+
+        inventory = game.get_player().get_inventory()
+        self._inventory.draw(inventory=inventory)
+
+        self._grid.unbind_all("<Any-KeyPress>")
+        self._grid.bind_all("<Any-KeyPress>", lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
