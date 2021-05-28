@@ -254,3 +254,17 @@ class BasicGraphicalInterface:
 
         self._grid.unbind_all("<Any-KeyPress>")
         self._grid.bind_all("<Any-KeyPress>", lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
+
+    def key_press(self, event, is_fire):
+        """
+        Tap on the keyboard input
+        Args:
+            event:
+        """
+        direction = event.char.upper()
+        if is_fire:
+            self._fire(direction)
+        else:
+            self._move(direction)
+
+    
