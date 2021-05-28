@@ -5,6 +5,7 @@ the hospital whilst evading zombies.
 from typing import Tuple, Optional, Dict, List
 import random
 from constants import *
+import math
 
 ## Support code
 
@@ -172,7 +173,7 @@ class Position:
         of the position class, the unique data is the x and y values.
         Therefore, we can calculate an appropriate hash by hashing a tuple of
         the x and y values.
-        
+
         Reference: https://stackoverflow.com/questions/17585730/what-does-hash-do-in-python
         """
         return hash((self.get_x(), self.get_y()))
@@ -280,7 +281,7 @@ class Entity:
     """
     Entity is an abstract class that is used to represent anything that can
     appear on the game's grid.
-    
+
     For example, the game grid will always have a player, so a player is
     considered a type of entity. A game grid may also have a zombie, so a
     zombie is considered a type of entity.
@@ -291,10 +292,10 @@ class Entity:
         The `step` method is called on every entity in the game grid after each
         move made by the player, it controls what actions an entity will perform
         during the _step_ event.
-        
+
         The abstract Entity class will not perform any action during the
         _step_ event. Therefore, this method should do nothing.
-        
+
         Parameters:
             position: The position of this entity when the _step_ event
                       is triggered.
@@ -305,13 +306,13 @@ class Entity:
     def display(self) -> str:
         """
         Return the character used to represent this entity in a text-based grid.
-        
+
         An instance of the abstract Entity class should never be placed in the
         grid, so this method should only be implemented by subclasses of Entity.
-        
+
         To indicate that this method needs to be implemented by subclasses,
         this method should raise a NotImplementedError.
-        
+
         Raises:
             NotImplementedError: Whenever this method is called.
         """
@@ -320,14 +321,14 @@ class Entity:
     def __repr__(self) -> str:
         """
         Return a representation of this entity.
-        
+
         By convention, the repr string of a class should look as close as
         possible to how the class is constructed. Since entities do not take
         constructor parameters, the repr string will be the class name followed
         by parentheses, ().
-        
+
         For example, the representation of the Entity class will be Entity().
-        
+
         Examples:
             >>> repr(Entity())
             'Entity()'
@@ -344,7 +345,7 @@ class Player(Entity):
     """
     A player is a subclass of the entity class that represents the player
     that the user controls on the game grid.
-    
+
     Examples:
         >>> player = Player()
         >>> repr(player)
@@ -357,7 +358,7 @@ class Player(Entity):
         """
         Return the character used to represent the player entity in a
         text-based grid.
-        
+
         A player should be represented by the 'P' character.
         """
         return PLAYER
@@ -367,10 +368,10 @@ class Hospital(Entity):
     """
     A hospital is a subclass of the entity class that represents the hospital
     in the grid.
-    
+
     The hospital is the entity that the player has to reach in order to win
     the game.
-    
+
     Examples:
         >>> hospital = Hospital()
         >>> repr(hospital)
@@ -383,7 +384,7 @@ class Hospital(Entity):
         """
         Return the character used to represent the hospital entity in a
         text-based grid.
-        
+
         A hospital should be represented by the 'H' character.
         """
         return HOSPITAL
@@ -392,10 +393,10 @@ class Hospital(Entity):
 class Grid:
     """
     The Grid class is used to represent the 2D grid of entities.
-    
+
     The grid can vary in size but it is always a square.
     Each (x, y) position in the grid can only contain one entity at a time.
-    
+
     Examples:
         >>> grid = Grid(5)
         >>> grid.get_size()
@@ -419,9 +420,9 @@ class Grid:
         """
         A grid is constructed with a size that dictates the length and width
         of the grid.
-        
+
         Initially a grid does not contain any entities.
-        
+
         Parameters:
             size: The length and width of the grid.
         """
@@ -435,15 +436,15 @@ class Grid:
     def in_bounds(self, position: Position) -> bool:
         """
         Return True if the given position is within the bounds of the grid.
-        
+
         For a position to be within the bounds of the grid, both the x and y
         coordinates have to be greater than or equal to zero but less than
         the size of the grid.
-        
+
         Parameters:
             position: An (x, y) position that we want to check is
                       within the bounds of the grid.
-                      
+
         Examples:
             >>> grid5 = Grid(5)
             >>> grid5.in_bounds(Position(0, 10))
@@ -466,20 +467,20 @@ class Grid:
     def add_entity(self, position: Position, entity: Entity) -> None:
         """
         Place a given entity at a given position of the grid.
-        
+
         If there is already an entity at the given position, the given
         entity will replace the existing entity.
-        
+
         If the given position is outside the bounds of the grid, the entity
         should not be added.
-        
+
         \\textbf{Hint:} You may find it helpful to implement `get_entity` below
         at the same time as this method.
-        
+
         Parameters:
             position: An (x, y) position in the grid to place the entity.
             entity: The entity to place on the grid.
-            
+
         Examples:
             >>> grid = Grid(4)
             >>> grid.add_entity(Position(0, 0), Player())
@@ -497,11 +498,11 @@ class Grid:
     def remove_entity(self, position: Position) -> None:
         """
         Remove the entity, if any, at the given position.
-        
+
         Parameters:
             position: An (x, y) position in the grid from which the entity
                       is removed.
-                      
+
         Examples:
             >>> grid = Grid(4)
             >>> grid.add_entity(Position(0, 0), Player())
@@ -515,12 +516,12 @@ class Grid:
     def get_entity(self, position: Position) -> Optional[Entity]:
         """
         Return the entity that is at the given position in the grid.
-        
+
         If there is no entity at the given position, returns None.
         If the given position is out of bounds, returns None.
-        
+
         See the above `add_entity` method for examples.
-        
+
         Parameters:
             position: The (x, y) position in the grid to check for an entity.
         """
@@ -530,14 +531,14 @@ class Grid:
         """
         Return a dictionary with position instances as the keys and entity
         instances as the values.
-        
+
         For every position in the grid that has an entity, the returned
         dictionary should contain an entry with the position instance
         mapped to the entity instance.
-        
+
         Updating the returned dictionary should have no side-effects.
         It would not modify the grid.
-        
+
         Examples:
             >>> grid = Grid(4)
             >>> grid.add_entity(Position(0, 0), Player())
@@ -550,10 +551,10 @@ class Grid:
     def get_entities(self) -> List[Entity]:
         """
         Return a list of all the entities in the grid.
-        
+
         Updating the returned list should have no side-effects.
         It would not modify the grid.
-        
+
         Examples:
             # The example below shows a grid with multiple hospitals this should
             # never occur in practice but isn't prohibited
@@ -570,20 +571,20 @@ class Grid:
     def move_entity(self, start: Position, end: Position) -> None:
         """
         Move an entity from the given start position to the given end position.
-        
+
         * If the end position or start position is out of the grid bounds,
           do not attempt to move.
         * If there is no entity at the given start position,
           do not attempt to move.
         * If there is an entity at the given end position, replace that entity
           with the entity from the start position.
-          
+
         The start position should not have an entity after moving.
-        
+
         Parameters:
             start: The position the entity is in initially.
             end: The position to which the entity will be moved.
-            
+
         Examples:
             >>> grid = Grid(10)
             >>> grid.add_entity(Position(1, 2), Player())
@@ -603,12 +604,12 @@ class Grid:
     def find_player(self) -> Optional[Position]:
         """
         Return the position of the player within the grid.
-        
+
         Return None if there is no player in the grid.
-        
+
         If the grid has multiple players (which it should not),
         returning any of the player positions is sufficient.
-        
+
         Examples:
             >>> grid = Grid(10)
             >>> grid.add_entity(Position(4, 6), Player())
@@ -628,7 +629,7 @@ class Grid:
         a postion.
         The characters are the display representation of the entity at that
         position. i.e. 'P' for player, `H' for hospital.
-        
+
         Only positions that have an entity should exist in the dictionary.
 
         Examples:
@@ -651,7 +652,7 @@ class MapLoader:
     """
     The MapLoader class is used to read a map file and create an appropriate
     Grid instance which stores all the map file entities.
-    
+
     The MapLoader class is an abstract class to allow for extensible map
     definitions. The BasicMapLoader class described below is a very simple
     implementation of the MapLoader which only handles the player and hospital
@@ -661,15 +662,15 @@ class MapLoader:
     def load(self, filename: str) -> Grid:
         """
         Load a new Grid instance from a map file.
-        
+
         Load will open the map file and read each line to find all the entities
         in the grid and add them to the new Grid instance.
-        
+
         The `create_entity` method below is used to turn a character
         in the map file into an Entity instance.
-        
+
         \\textbf{Hint:} The `load_map` function in the support code may be helpful.
-        
+
         Parameters:
             filename: Path where the map file should be found.
         """
@@ -685,13 +686,13 @@ class MapLoader:
         """
         Create and return a new instance of the Entity class based on the
         provided token.
-        
+
         For example, if the given token is 'P' a Player instance will be
         returned.
-        
+
         The abstract MapLoader class does not support any entities, when this
         method is called, it should raise a NotImplementedError.
-        
+
         Parameters:
             token: Character representing the Entity subtype.
         """
@@ -702,7 +703,7 @@ class BasicMapLoader(MapLoader):
     """
     BasicMapLoader is a subclass of MapLoader which can handle loading map
     files which include the following entities:
-    
+
     * Player
     * Hospital
     """
@@ -711,14 +712,14 @@ class BasicMapLoader(MapLoader):
         """
         Create and return a new instance of the Entity class based on the
         provided token.
-        
+
         For example, if the given token is 'P' a Player instance will be
         returned.
-        
+
         The BasicMapLoader class only supports the Player and Hospital entities.
         When a token is provided that does not represent the Player or Hospital,
         this method should raise a ValueError.
-        
+
         Parameters:
             token: Character representing the Entity subtype.
         """
@@ -734,7 +735,7 @@ class Game:
     """
     The Game handles some of the logic for controlling the actions of the player
     within the grid.
-    
+
     The Game class stores an instance of the Grid and keeps track of the player
     within the grid so that the player can be controlled.
     """
@@ -743,10 +744,10 @@ class Game:
         """
         The construction of a Game instance takes the grid upon which the game
         is being played.
-        
+
         Preconditions:
             The grid has a player, i.e. `grid.find_player()` is not None.
-            
+
         Parameters:
             grid (Grid): The game's grid.
         """
@@ -761,9 +762,9 @@ class Game:
     def get_player(self) -> Optional[Player]:
         """
         Return the instance of the Player class in the grid.
-        
+
         If there is no player in the grid, return None.
-        
+
         If there are multiple players in the grid, returning any player is
         sufficient.
         """
@@ -778,7 +779,7 @@ class Game:
         """
         The _step_ method of the game will be called after every action
         performed by the player.
-        
+
         This method triggers the _step_ event by calling the step method
         of every entity in the grid. When the entity's step method is called,
         it should pass the entity's current position and this game as parameters.
@@ -799,13 +800,13 @@ class Game:
     def move_player(self, offset: Position) -> None:
         """
         Move the player entity in the grid by a given offset.
-        
+
         Add the offset to the current position of the player, move the player
         entity within the grid to the new position.
-        
+
         If the new position is outside the bounds of the grid, or there is no
         player in the grid, this method should not move the player.
-        
+
         Parameters:
             offset: A position to add to the player's current position
                     to produce the player's new desired position.
@@ -819,16 +820,16 @@ class Game:
     def direction_to_offset(self, direction: str) -> Optional[Position]:
         """
         Convert a direction, as a string, to a offset position.
-        
+
         The offset position can be added to a position to move in the
         given direction.
-        
+
         If the given direction is not valid, this method should return None.
-        
+
         Parameters:
             direction: Character representing the direction in which the
                        player should be moved.
-                       
+
         Examples:
             >>> game = Game(Grid(5))
             >>> game.direction_to_offset("W")
@@ -856,7 +857,7 @@ class Game:
     def has_won(self) -> bool:
         """
         Return true if the player has won the game.
-        
+
         The player wins the game by stepping onto the hospital. When the player
         steps on the hospital, there will be no hospital entity in the grid.
         """
@@ -865,7 +866,7 @@ class Game:
     def has_lost(self) -> bool:
         """
         Return true if the player has lost the game.
-        
+
         Currently there is no way for the player to lose the game so this
         method should always return false.
         """
@@ -875,7 +876,7 @@ class Game:
 class TextInterface(GameInterface):
     """
     A text-based interface between the user and the game instance.
-    
+
     This class handles all input collection from the user and printing to the
     console.
     """
@@ -885,7 +886,7 @@ class TextInterface(GameInterface):
         The text-interface is constructed knowing the size of the game to be
         played, this allows the draw method to correctly print the right
         sized grid.
-        
+
         Parameters:
             size (int): The size of the game to be displayed and played.
         """
@@ -895,11 +896,11 @@ class TextInterface(GameInterface):
         """
         The draw method should print out the given game surrounded
         by '#' characters representing the border of the game.
-        
+
         Parameters:
             game: An instance of the game class that is to be displayed
                   to the user by printing the grid.
-                  
+
         Examples:
             >>> grid = Grid(4)
             >>> grid.add_entity(Position(2, 2), Player())
@@ -929,10 +930,10 @@ class TextInterface(GameInterface):
         The play method implements the game loop, constantly prompting the user
         for their action, performing the action and printing the game until the
         game is over.
-        
+
         \\textbf{Hint:} Refer to the Gameplay section for a detailed
         explanation of the game loop.
-        
+
         Parameters:
             game: The game to start playing.
         """
@@ -957,16 +958,16 @@ class TextInterface(GameInterface):
         """
         The handle_action method is used to process the actions entered
         by the user during the game loop in the play method.
-        
+
         The handle_action method should be able to handle all movement
         actions, i.e. 'W', 'A', 'S', 'D'.
-        
+
         If the given action is not a direction, this method should
         only trigger the step event and do nothing else.
 
         \\textbf{Hint:} Refer to the Gameplay section for a detailed
         explanation of the game loop.
-        
+
         Parameters:
             game: The game that is currently being played.
             action: An action entered by the player during the game loop.
@@ -985,7 +986,7 @@ class VulnerablePlayer(Player):
     """
     The VulnerablePlayer class is a subclass of the Player, this class extends
     the player by allowing them to become infected.
-    
+
     Examples:
         >>> player = VulnerablePlayer()
         >>> player.is_infected()
@@ -1021,7 +1022,7 @@ class VulnerablePlayer(Player):
 class Zombie(Entity):
     """
     The Zombie entity will wander the grid at random.
-    
+
     The movement of a zombie is triggered by the player performing an action,
     i.e. the zombie moves during each _step_ event.
     """
@@ -1032,7 +1033,7 @@ class Zombie(Entity):
         """
         Returns the list of offsets sorted by the order of directions
         prioritised by this zombie
-            
+
         Parameters:
             position: current position of this zombie
             game: current game being played
@@ -1043,16 +1044,16 @@ class Zombie(Entity):
         """
         The `step` method for the zombie entity will move the zombie
         in a random direction.
-        
+
         To implement this, generate a list of the possible directions to move
         in a random order by calling the `random_directions` function
         from the support code. Check each of the directions to see if the
         resultant position is available. The resultant position is the position
         you reach from moving in a direction.
-        
+
         To be available, a position must be in the bounds of the grid and not
         already contain an entity.
-        
+
         i.e. if `random_directions` returns [(1, 0), (0, 1), (-1, 0), (0, -1)]
         \\begin{enumerate}
         \\item check the current position + (1, 0),
@@ -1064,12 +1065,12 @@ class Zombie(Entity):
         \\item check the current position + (0, -1),
         if that position is available, move there and stop looking.
         \\end{enumerate}
-        
+
         If none of the resultant positions are available, do not move the zombie.
 
         If the position the zombie is going to move to contains the player,
         the zombie should infect the player but not move to that position.
-        
+
         Parameters:
             position: The position of this zombie when the _step_ event
                       is triggered.
@@ -1099,7 +1100,7 @@ class Zombie(Entity):
         """
         Return the character used to represent the zombie entity in a
         text-based grid.
-        
+
         A zombie should be represented by the 'Z' character.
         """
         return ZOMBIE
@@ -1116,7 +1117,7 @@ class IntermediateGame(Game):
     def has_lost(self) -> bool:
         """
         Return true if the player has lost the game.
-        
+
         The player loses the game if they become infected by a zombie.
         """
         player = self.get_player()
@@ -1135,13 +1136,13 @@ class IntermediateMapLoader(BasicMapLoader):
     """
     The IntermediateMapLoader class extends BasicMapLoader to add support for
     new entities that are added in task 2 of the assignment.
-    
+
     When a player token, 'P', is found, a VulnerablePlayer instance should
     be created instead of a Player.
-    
+
     In addition to the entities handled by the BasicMapLoader, the
     IntermediateMapLoader should be able to load the following entities:
-    
+
     * Zombie
     """
 
@@ -1178,16 +1179,16 @@ class TrackingZombie(Zombie):
         """
         The `step` method for the tracking zombie will move the tracking zombie
         in the best possible direction to move closer to the player.
-        
+
         To implement this, sort a list of possible directions to minimize
         the distance between the resultant position and the player's position.
         The resultant position is the position resulting from moving the
         tracking zombie in a direction.
-        
+
         If there are multiple directions that result in being the same
         distance from the player, the direction should be picked in preference
         order picking 'W' first followed by 'S', 'N', and finally 'E'.
-        
+
         i.e. if the zombie is at (1, 1) and the player is at (2, 4)
         * Moving 'N' will give a resultant position of (1, 2), which is a
           distance of 3 from the player
@@ -1197,23 +1198,23 @@ class TrackingZombie(Zombie):
           distance of 5 from the player
         * Moving 'S' will give a resultant position of (1, 0) which is a
           distance of 5 from the player
-          
+
         In this situation 'N' and 'E' compete for best direction so 'N' is
         picked, 'W' and 'S' are also equidistant so 'W' is picked, causing an
         order of 'N', 'E', 'W', 'S' to be chosen.
-        
+
         Similar to the zombie's `step` method, this method should check each of
         the possible directions in order, and move the zombie to the first
         available position.
-        
+
         To be available, a position must be in the bounds of the grid and not
         already contain an entity.
-        
+
         If none of the resultant positions are available, do not move the zombie.
 
         If the position the zombie is going to move to contains the player,
         the zombie should infect the player but not move to that position.
-        
+
         Parameters:
             position: The position of this zombie when the _step_ event
                       is triggered.
@@ -1225,7 +1226,7 @@ class TrackingZombie(Zombie):
         """
         Return the character used to represent the tracking zombie entity in
         a text-based grid.
-        
+
         A tracking zombie should be represented by the 'T' character.
         """
         return TRACKING_ZOMBIE
@@ -1245,7 +1246,7 @@ class Pickup(Entity):
         be equal to its maximum lifetime (durability).
         """
         self._lifetime = self.get_durability()
-        self._using = False     # Entities are not selected to be actively 
+        self._using = False     # Entities are not selected to be actively
                                 # used, when they are first picked up.
 
     def get_durability(self) -> int:
@@ -1268,6 +1269,12 @@ class Pickup(Entity):
         of the item before the item disappears from the player's inventory.
         """
         return self._lifetime
+
+    def set_lifetime(self, lifetime: int) -> None:
+        """
+
+        """
+        self._lifetime = lifetime
 
     def hold(self) -> None:
         """
@@ -1301,11 +1308,10 @@ class Pickup(Entity):
         return f"{self.__class__.__name__}({self.get_lifetime()})"
 
 
-
 class Garlic(Pickup):
     """
     Garlic is an entity which the player can pickup.
-    
+
     While the player is holding a garlic entity they cannot
     be infected by a zombie.
     """
@@ -1313,7 +1319,7 @@ class Garlic(Pickup):
     def get_durability(self) -> int:
         """
         Return the durability of a garlic.
-        
+
         A player can only hold a garlic entity for 10 _steps_.
         """
         return LIFETIMES[GARLIC]
@@ -1322,7 +1328,7 @@ class Garlic(Pickup):
         """
         Return the character used to represent the garlic entity in
         a text-based grid.
-        
+
         A garlic should be represented by the 'G' character.
         """
         return GARLIC
@@ -1331,7 +1337,7 @@ class Garlic(Pickup):
 class Crossbow(Pickup):
     """
     Crossbow is an entity which the player can pickup.
-    
+
     While the player is holding a crossbow entity they are
     able to use the fire action to launch a protectile in a
     given direction, removing the first zombie in that direction.
@@ -1340,7 +1346,7 @@ class Crossbow(Pickup):
     def get_durability(self) -> int:
         """
         Return the durability of a crossbow.
-        
+
         A player can only hold a crossbow entity for 5 _steps_.
         """
         return LIFETIMES[CROSSBOW]
@@ -1358,11 +1364,11 @@ class Inventory:
     """
     An inventory holds a collection of entities which the player can pickup,
     i.e. Pickup subclasses.
-    
+
     The player is only able to hold any given item for a limited duration, this
     is the lifetime of the item. Once the lifetime is exceeded the item will
     be destroyed by being removed from the inventory.
-    
+
     Examples:
         >>> crossbow = Crossbow()
         >>> garlic = Garlic()
@@ -1399,9 +1405,9 @@ class Inventory:
         """
         The step method should be called every time the player steps as a part
         of the player's `step` method.
-        
-        When this method is called, the lifetime of every active item stored 
-        within the inventory should decrease. Any items in the inventory that 
+
+        When this method is called, the lifetime of every active item stored
+        within the inventory should decrease. Any items in the inventory that
         have exceeded their lifetime should be removed.
         """
         new_items = []
@@ -1433,7 +1439,7 @@ class Inventory:
         """
         Return true if the inventory contains any entities which return the
         given pickup_id from the entity's `display` method.
-        
+
         Examples:
             >>> inventory = Inventory()
             >>> inventory.add_item(Garlic())
@@ -1471,7 +1477,7 @@ class HoldingPlayer(VulnerablePlayer):
     """
     The HoldingPlayer is a subclass of VulnerablePlayer that extends the
     existing functionality of the player.
-    
+
     In particular, a holding player will now keep an inventory.
     """
 
@@ -1498,7 +1504,7 @@ class HoldingPlayer(VulnerablePlayer):
         """
         The `step` method for a holding player will notify its inventory
         that a _step_ event has occurred.
-        
+
         Parameters:
             position: The position of this entity when the _step_ event
                       is triggered.
@@ -1516,10 +1522,10 @@ class AdvancedGame(IntermediateGame):
     def move_player(self, offset: Position) -> None:
         """
         Move the player entity in the grid by a given offset.
-        
+
         If the player moves onto a Pickup item, it should be added to the
         player's inventory and removed from the grid.
-        
+
         Parameters:
             offset: A position to add to the player's current position
                     to produce the player's new desired position.
@@ -1542,13 +1548,13 @@ class AdvancedMapLoader(IntermediateMapLoader):
     """
     The AdvancedMapLoader class extends IntermediateMapLoader to add support for
     new entities that are added in task 3 of the assignment.
-    
+
     When a player token, 'P', is found, a HoldingPlayer instance should be
     created instead of a Player or VulnerablePlayer.
-    
+
     In addition to the entities handled by the IntermediateMapLoader, the
     AdvancedMapLoader should be able to load the following entities:
-    
+
     * TrackingZombie
     * Garlic
     * Crossbow
@@ -1569,7 +1575,7 @@ class AdvancedMapLoader(IntermediateMapLoader):
 class AdvancedTextInterface(TextInterface):
     """
     A text-based interface between the user and the game instance.
-    
+
     This class extends the existing functionality of TextInterface to include
     displaying the state of the player's inventory and a firing action.
     """
@@ -1578,20 +1584,20 @@ class AdvancedTextInterface(TextInterface):
         """
         The draw method should print out the given game surrounded
         by '#' characters representing the border of the game.
-        
+
         This method should behave in the same way as the super class except
         if a player is currently holding items in their inventory.
-        
+
         If the player is holding items in their inventory,
         'The player is currently holding:' should be printed after the grid,
         followed by the representation of each item in the inventory on
         separate lines.
         See the examples for more details.
-        
+
         Parameters:
             game: An instance of the game class that is to be displayed
                   to the user by printing the grid.
-                  
+
         Examples:
             >>> grid = Grid(4)
             >>> grid.add_entity(Position(2, 2), HoldingPlayer())
@@ -1631,7 +1637,7 @@ class AdvancedTextInterface(TextInterface):
         """
         The handle_action method for AdvancedTextInterface should extend
         the interface to be able to handle the fire action for a crossbow.
-        
+
         If the user enters, 'F' for fire take the following actions:`
         \\begin{enumerate}
         \\item Check that the user has something to fire, i.e. a crossbow,
@@ -1650,10 +1656,10 @@ class AdvancedTextInterface(TextInterface):
                zombie.
         \\item Trigger the _step_ event.
         \\end{enumerate}`
-        
+
         If the action is not fire, this method should behave the same as
         `TextInterface.handle_action`.
-        
+
         Parameters:
             game: The game that is currently being played.
             action: An action entered by the player during the game loop.
@@ -1716,3 +1722,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
