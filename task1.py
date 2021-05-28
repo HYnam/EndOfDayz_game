@@ -125,4 +125,15 @@ class InventoryView(AbstractGrid):
         }
         super().__init__(master=master, rows=rows, cols=2, width=INVENTORY_WIDTH, height=height, **kwargs)
 
+    def draw(self, inventory):
+        """
+         Draws the inventory label and current items with their remaining lifetimes
+        Args:
+            inventory: the player's inventory
+        """
+        self.delete("all")
+        self.draw_label()
+        for index, item in enumerate(inventory.get_items()):
+            self.draw_pickup(index+1, item, item.is_active())
+    
     
