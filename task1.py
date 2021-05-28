@@ -89,3 +89,14 @@ class BasicMap(AbstractGrid):
             CROSSBOW: BLACK
         }
         super().__init__(master=master, rows=size, cols=size, width=width, height=height, **kwargs)
+
+    def draw_entity(self, position, tile_type):
+        """
+         Draws the entity with tile type at the given position using a coloured rectangle with
+         superimposed text identifying the entity
+        Args:
+            position: (row, col)
+            tile_type: entity type, find the color in ENTITY_COLOURS
+        """
+        self.create_rectangle(self.get_bbox(position), fill=ENTITY_COLOURS[tile_type])
+        self.annotate_position(position, tile_type, fill=self._entity_fg[tile_type])
