@@ -416,7 +416,8 @@ class BasicGraphicalInterface:
         self._step(self._game)
 
         inventory = game.get_player().get_inventory()
-        self._inventory.bind("<Button-1>", lambda event, func=self._inventory_click, inventory=inventory: self._inventory_click(event, inventory))
+        self._inventory.bind("<Button-1>", 
+                            lambda event, func=self._inventory_click, inventory=inventory: self._inventory_click(event, inventory))
 
         self._master.mainloop()
 
