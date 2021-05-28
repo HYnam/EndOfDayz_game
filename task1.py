@@ -287,3 +287,32 @@ class BasicGraphicalInterface:
     def is_fire(self):
         inventory = self._game.get_player().get_inventory()
         return inventory.has_active(CROSSBOW)
+
+    def _fire(self, direction):
+        """
+        Handles the fire of crossbow and redrawing the game.
+        Args:
+            direction: direction
+
+        Returns:
+
+        """
+        if direction in DIRECTIONS:
+            # function handle_action in a2.solution.py
+            start = self._game.get_grid().find_player()
+            offset = self._game.direction_to_offset(direction)
+            if start is None or offset is None:
+                return  # Should never happen.
+
+            # Find the first entity in the direction player fired.
+            first = a2.first_in_direction(
+                self._game.get_grid(), start, offset
+            )
+
+            # If the entity is a zombie, kill it.
+            if first is not None and first[1].display() in ZOMBIES:
+                position, entity = first
+                self._game.get_grid().remove_entity(position)
+                self.draw(self._game)
+            else:
+                print(NO_ZOMBIE_MESSAGE)
