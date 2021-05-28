@@ -169,3 +169,31 @@ class InventoryView(AbstractGrid):
         position = (col, row)
         self.create_rectangle(self.get_bbox(position), fill=self._status_color[is_active], outline=self._status_color[is_active])
         self.annotate_position(position, str(item.get_lifetime()), fill=self._fg_color[is_active])
+
+    def toggle_item_activation(self, pixel, inventory):
+        """
+        Activates or deactivates the item (if one exists) in the row containing the pixel.
+        Args:
+            pixel: location (x, y)
+            inventory: the player's inventory
+
+        Returns:
+            whether the item can be activated or deactivated
+        """
+        row, col = self.pixel_to_position(pixel)
+        if row > len(inventory.get_items()):
+            return False
+
+        if inventory.any_active():
+            for index, pickup in enumerate(inventory.get_items()):
+                if pickup.is_active() and index + 1 != row:
+                    return True
+                if pickup.is_active() and index + 1 == row:
+                    inventory.get_items()[index].toggle_active()
+                    self.draw_pickup(row, pickup, pickup.is_active())
+        else:
+            for index, pickup in enumerate(inventory.get_items()):
+                if index + 1 == row:
+                    inventory.get_items()[index].toggle_active()
+                    self.draw_pickup(row, pickup, pickup.is_active())
+        return False
