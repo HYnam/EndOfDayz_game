@@ -16,7 +16,8 @@ from constants import TASK, MAP_FILE
 # the GUI for each of the tasks that you implement in the assignment.
 from task1 import BasicGraphicalInterface
 from task2 import ImageGraphicalInterface
-#from csse7030 import MastersGraphicalInterface
+# from csse7030 import MastersGraphicalInterface
+
 
 def main() -> None:
     """Entry point to gameplay."""
@@ -25,11 +26,11 @@ def main() -> None:
     root = tk.Tk()
     root.title('EndOfDayz')
     if TASK == 1:
-    	gui = BasicGraphicalInterface
+        gui = BasicGraphicalInterface
     elif TASK == 2:
-    	gui = ImageGraphicalInterface
-    #else:
-    #	gui = MastersGraphicalInterface
+        gui = ImageGraphicalInterface
+    # else:
+    # 	gui = MastersGraphicalInterface
     app = gui(root, game.get_grid().get_size())
     app.play(game)
 
