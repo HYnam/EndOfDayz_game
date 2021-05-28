@@ -12,15 +12,16 @@ class AbstractGrid(tk.Canvas):
     """
     AbstractGrid is an abstract view class which inherits from tk.Canvas and provides base
     functionality for other view classes.
+
     An AbstractGrid can be thought of as a grid with a set number of rows and columns,
     which supports creation of text at specific positions based on row and column.
+
     The number of rows may differ from the number of columns,
     and the cells may be non-square
     """
-
+    # Same as task 1
     def __init__(self, master, rows, cols, width, height, **kwargs):
         """
-
         Args:
             master:
             rows: number of rows
@@ -39,6 +40,7 @@ class AbstractGrid(tk.Canvas):
         super().__init__(master, **kwargs)
         self.config(width=width, height=height)
 
+    # Same as task 1
     def get_bbox(self, position):
         """
         Returns the bounding box for the position
@@ -56,6 +58,7 @@ class AbstractGrid(tk.Canvas):
         y_max = y * self._cell_height + self._cell_height
         return x_min, y_min, x_max, y_max
 
+    # Same as task 1
     def pixel_to_position(self, pixel):
         """
          Converts the (x, y) pixel position (in graphics units) to a (row, column) position.
@@ -67,11 +70,10 @@ class AbstractGrid(tk.Canvas):
 
         """
         x, y = pixel
-        # row = y / cell_height
-        # column = x / cell_width
         position = (y // self._cell_height, x // self._cell_width)
         return position
 
+    # Same as task 1
     def get_position_center(self, position):
         """
          Gets the graphics coordinates for the center of the cell at the given (row, column) position
@@ -80,12 +82,12 @@ class AbstractGrid(tk.Canvas):
 
         Returns:
             (x, y)
-
         """
         x_min, y_min, x_max, y_max = self.get_bbox(position)
         position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
         return position_center
 
+    # Same as task 1
     def annotate_position(self, position, text, **kwargs):
         """
         Annotates the center of the cell at the given (row, column) position with the provided text
@@ -93,9 +95,6 @@ class AbstractGrid(tk.Canvas):
             position: (row, column)
             text: string for annotation
             **kwargs:
-
-        Returns:
-
         """
         self.create_text(self.get_position_center(position), text=text, **kwargs)
 
@@ -106,6 +105,7 @@ class BasicMap(AbstractGrid):
 
     Entities are drawn on the map using coloured rectangles at different (row, column) positions.
     """
+    # Same as task 1
     def __init__(self, master, size, **kwargs):
         """
 
@@ -127,6 +127,7 @@ class BasicMap(AbstractGrid):
         }
         super().__init__(master=master, rows=size, cols=size, width=width, height=height, **kwargs)
 
+    # Same as task 1
     def draw_entity(self, position, tile_type):
         """
          Draws the entity with tile type at the given position using a coloured rectangle with
@@ -149,10 +150,8 @@ class ImageMap(BasicMap):
     This class should behave similarly to BasicMap, except that images should be used to display each
     square rather than rectangles
     """
-
     def __init__(self, master, size, **kwargs):
         """
-
         Args:
             master:
             size:  the number of rows (= number of columns) in the grid
@@ -162,10 +161,10 @@ class ImageMap(BasicMap):
 
         # open file as image
         image = Image.open(IMAGES[BACK_GROUND])
-        image = image.resize((self._cell_width, self._cell_height))
+        image = image.resize((self._cell_width, self._cell_height)) # resize background image to given size
         self.background_img = ImageTk.PhotoImage(image)
 
-        image = Image.open(IMAGES[PLAYER])
+        image = Image.open(IMAGES[PLAYER])  # Open player image
         image = image.resize((self._cell_width, self._cell_height))
         self.player_img = ImageTk.PhotoImage(image)
 
@@ -197,14 +196,12 @@ class ImageMap(BasicMap):
     def draw_background(self):
         """
         Instead of using a single image, use multiple identical background images tiled as a background
-        Returns:
-
         """
         for row in range(self._rows):
             for column in range(self._cols):
                 x = column * self._cell_width
                 y = row * self._cell_height
-                self.create_image((x, y), image=self.background_img, anchor=tk.NW)
+                self.create_image((x, y), image=self.background_img, anchor=tk.NW)  # Show background image in x, y
 
     def draw_entity(self, position, tile_type, **kwargs):
         """
@@ -213,20 +210,17 @@ class ImageMap(BasicMap):
         position: (x, y)
         tile_type: entity type
         kwargs:
-
-        Returns:
-
         """
         if tile_type in self.image_dict:
             self.create_image((self.get_bbox(position)[0], self.get_bbox(position)[1]), image=self.image_dict[tile_type], anchor=tk.NW)
-
+            # Create the image within bounding position
 
 class InventoryView(AbstractGrid):
     """
     InventoryView is a view class which inherits from AbstractGrid and displays the items the player
     has in their inventory.
     """
-
+    # Same as task 1
     def __init__(self, master, rows, **kwargs):
         """
 
@@ -246,24 +240,22 @@ class InventoryView(AbstractGrid):
         }
         super().__init__(master=master, rows=rows, cols=2, width=INVENTORY_WIDTH, height=height, **kwargs)
 
+    # Same as task 1
     def draw(self, inventory):
         """
          Draws the inventory label and current items with their remaining lifetimes
         Args:
             inventory: the player's inventory
-
-        Returns:
-
         """
         self.delete("all")
         self.draw_label()
         for index, item in enumerate(inventory.get_items()):
             self.draw_pickup(index + 1, item, item.is_active())
 
+    # Same as task 1
     def draw_label(self):
         """
-        Returns:
-
+        Draw inventory label 
         """
         x_min = 0
         y_min = 0
@@ -274,15 +266,13 @@ class InventoryView(AbstractGrid):
         position_center = ((x_min + x_max) / 2, (y_min + y_max) / 2)
         self.create_text(position_center, text="Inventory", fill=DARK_PURPLE, font="None 14")
 
+    # Same as task 1
     def draw_pickup(self, row, item, is_active):
         """
         draw the row in inventory view according to the given index
         Args:
             row: row
             item: Pickup
-
-        Returns:
-
         """
         pickup_text = {
             GARLIC: "Garlic",
@@ -298,6 +288,7 @@ class InventoryView(AbstractGrid):
         self.create_rectangle(self.get_bbox(position), fill=self._status_color[is_active], outline=self._status_color[is_active])
         self.annotate_position(position, str(item.get_lifetime()), fill=self._fg_color[is_active])
 
+    # Same as task 1
     def toggle_item_activation(self, pixel, inventory):
         """
         Activates or deactivates the item (if one exists) in the row containing the pixel.
@@ -307,7 +298,6 @@ class InventoryView(AbstractGrid):
 
         Returns:
             whether the item can be activated or deactivated
-
         """
         row, col = self.pixel_to_position(pixel)
         if row > len(inventory.get_items()):
@@ -332,10 +322,8 @@ class StatusBar(tk.Frame):
     """
     a StatusBar class that inherits from tk.Frame
     """
-
     def __init__(self, master, **kwargs):
         """
-
         Args:
             master: root window
             moves_made:
@@ -352,30 +340,30 @@ class StatusBar(tk.Frame):
         self._image_width = 40
         self._image_height = 40
 
-        self._main_container = tk.Frame(self._master, width=self._width, height=self._height)
+        self._main_container = tk.Frame(self._master, width=self._width, height=self._height)   # Frame size
         self._main_container.pack(side=tk.TOP)
 
         self._chaser_frame = tk.Frame(self._main_container)
         chaser_file = "./images/chaser.png"
         chaser_img = Image.open(chaser_file)
-        chaser_img = chaser_img.resize((self._image_width, self._image_height))
-        chaser_img = ImageTk.PhotoImage(chaser_img)
-        chaser_label = tk.Label(self._chaser_frame, image=chaser_img)
-        chaser_label.image = chaser_img
-        self._chaser_frame.pack(side=tk.LEFT)
+        chaser_img = chaser_img.resize((self._image_width, self._image_height)) # Resize the photo
+        chaser_img = ImageTk.PhotoImage(chaser_img) # Show the photo
+        chaser_label = tk.Label(self._chaser_frame, image=chaser_img)   # Get label
+        chaser_label.image = chaser_img # Label to the photo
+        self._chaser_frame.pack(side=tk.LEFT)   # Where the frame is in direction and size
         chaser_label.pack(side=tk.TOP, padx=int(self._width / 30))
 
-        self._timer_frame = tk.Frame(self._main_container)
+        self._timer_frame = tk.Frame(self._main_container)  # Create timer frame
         timer_text = tk.Label(self._timer_frame, text="Timer", font="None 10")
         minute = self._timer_count // 60
         second = self._timer_count % 60
-        self._timer_count = tk.Label(self._timer_frame, text="{} mins {} seconds".format(minute, second))
-        self._timer_frame.pack(side=tk.LEFT, padx=int(self._width / 20))
+        self._timer_count = tk.Label(self._timer_frame, text="{} mins {} seconds".format(minute, second))   # Counting format
+        self._timer_frame.pack(side=tk.LEFT, padx=int(self._width / 20))   
         timer_text.pack(side=tk.TOP)
         self._timer_count.pack(side=tk.TOP)
 
         self._moves_frame = tk.Frame(self._main_container)
-        self._moves_text = tk.Label(self._moves_frame, text="Moves made", font="None 10")
+        self._moves_text = tk.Label(self._moves_frame, text="Moves made", font="None 10")   # Create how many move made
         self._moves_made = tk.Label(self._moves_frame, text="{} moves".format(self._moves_made))
         self._moves_frame.pack(side=tk.LEFT, padx=int(self._width / 20))
         self._moves_text.pack(side=tk.TOP)
@@ -402,23 +390,17 @@ class StatusBar(tk.Frame):
         """
         update the text of label
         Args:
-            time:
-
-        Returns:
-
+            time
         """
         minute = time_count // 60
         second = time_count % 60
-        self._timer_count.config(text="{}m {}s".format(minute, second))
+        self._timer_count.config(text="{}m {}s".format(minute, second)) # Format to count the time game play
 
     def change_moves_made(self, moves_made):
         """
         update the text of label
         Args:
             moves_made: new number
-
-        Returns:
-
         """
         self._moves_made.config(text="{} moves".format(moves_made))
 
@@ -427,10 +409,8 @@ class ImageGraphicalInterface:
     """
     The ImageGraphicalInterface is similar to BasicGraphicalInterface
     """
-
     def __init__(self, root, size):
         """
-
         Args:
             root: the root window
             size: the number of rows (= number of columns) in the game map
@@ -443,7 +423,7 @@ class ImageGraphicalInterface:
         self._timer_schedule = None
         self._step_schedule = None
 
-        self._master.title("EndOfDayZ")
+        self._master.title(TITLE)
 
         # End of Dayz
         self._banner_width = size * CELL_SIZE + INVENTORY_WIDTH
@@ -468,6 +448,7 @@ class ImageGraphicalInterface:
         self._inventory = InventoryView(self._main_container, rows=size, bg=LIGHT_PURPLE)
         self._inventory.pack(side=tk.LEFT)
 
+        # Button restart game and quit game
         self._statusbar_width = size * CELL_SIZE + INVENTORY_WIDTH
         self._statusbar_height = 10
         self._statusbar = StatusBar(self._master, width=self._statusbar_width, height=self._statusbar_height)
@@ -478,6 +459,7 @@ class ImageGraphicalInterface:
         # parent menu
         self._menu_bar = tk.Menu(self._master)
 
+        # What to do on each button
         self._file_menu = tk.Menu(self._menu_bar)
         self._file_menu.add_command(label="Restart game", command=self.restart_game)
         self._file_menu.add_separator()
@@ -492,14 +474,12 @@ class ImageGraphicalInterface:
         self._master.config(menu=self._menu_bar)
         self._menu_bar.add_cascade(label="File", menu=self._file_menu)
 
+    # Same as task 1
     def draw(self, game):
         """
         Clears and redraws the view based on the current game state.
         Args:
-            game:
-
-        Returns:
-
+            game
         """
         self._grid.delete("all")
         self._grid.draw_background()
@@ -518,14 +498,12 @@ class ImageGraphicalInterface:
         self._grid.bind_all("<Any-KeyPress>",
                             lambda event, func=self.key_press, is_fire=self.is_fire(): self.key_press(event, is_fire))
 
+    # Same as task 1
     def key_press(self, event, is_fire):
         """
         Tap on the keyboard input
         Args:
-            event:
-
-        Returns:
-
+            event
         """
         direction = event.char.upper()
         if is_fire:
@@ -533,13 +511,12 @@ class ImageGraphicalInterface:
         else:
             self._move(direction)
 
+    # Same as task 1
     def _move(self, direction):
         """
         Handles moving the player and redrawing the game.
         Args:
             direction: direction
-
-        Returns:
 
         """
         if direction in DIRECTIONS:
@@ -551,6 +528,7 @@ class ImageGraphicalInterface:
 
             self.stop_game()
 
+    # Same as task 1
     def _fire(self, direction):
         """
         Handles the fire of crossbow and redrawing the game.
@@ -580,10 +558,12 @@ class ImageGraphicalInterface:
             else:
                 print(NO_ZOMBIE_MESSAGE)
 
+    # Same as task 1
     def is_fire(self):
         inventory = self._game.get_player().get_inventory()
         return inventory.has_active(CROSSBOW)
 
+    # Same as task 1
     def _step(self, game):
         """
         The step method triggers the step method for the game and updates the view accordingly.
@@ -591,10 +571,7 @@ class ImageGraphicalInterface:
         The step method is called every second.
 
         Args:
-            game:
-
-        Returns:
-
+            game
         """
         self._master.update()
         game.step()
@@ -602,6 +579,7 @@ class ImageGraphicalInterface:
 
         if not self.stop_game():
             self._step_schedule = self._master.after(STEP_FPS, self._step, game)
+
 
     def _inventory_click(self, event, inventory: a2.Inventory):
         """
@@ -613,9 +591,6 @@ class ImageGraphicalInterface:
         Args:
             event: click event
             inventory: inventory
-
-        Returns:
-
         """
         position = (event.x, event.y)
         if self._inventory.toggle_item_activation(position, inventory):
@@ -633,20 +608,16 @@ class ImageGraphicalInterface:
     def timer(self):
         """
         Timer task
-        Returns:
-
         """
         self._time_count = self._time_count + 1
-        self._timer_schedule = self._master.after(TIME_FPS, self.timer)
+        self._timer_schedule = self._master.after(TIME_FPS, self.timer) # Schedule the timer, every 1000
 
+    # Same as task 1
     def play(self, game):
         """
         Binds events and initialises gameplay.
         Args:
-            game:
-
-        Returns:
-
+            game
         """
         self._game = game
         self.draw(self._game)
@@ -663,14 +634,16 @@ class ImageGraphicalInterface:
     def stop_schedule(self):
         """
         cancel the scheduled task
-        Returns:
-
         """
         self._master.after_cancel(self._step_schedule)
         self._master.after_cancel(self._timer_schedule)
 
     def stop_game(self):
+        """
+        When to stop the game 
+        """
         stop_game = False
+        # Only win game and lose game will stop game
         if self._game.has_won():
             self.win_game()
             stop_game = True
@@ -684,27 +657,26 @@ class ImageGraphicalInterface:
     def win_game(self):
         """
         game win
-        Returns:
-
         """
         self.stop_schedule()
         self._grid.unbind_all("<Any-KeyPress>")
 
-        minute = self._time_count // 60
+        # Timer
+        minute = self._time_count // 60 
         second = self._time_count % 60
+        # Set player name if win with used time
         player_name = simpledialog.askstring(title=WIN_MESSAGE,
-                                             prompt="You won in {}m and {}s! Enter your name:".format(minute,
-                                                                                                               second))
+                                             prompt="You won in {}m and {}s! Enter your name:".format(minute, second))
         try:
-            with open(HIGH_SCORES_FILE) as record_file:
-                records = record_file.readlines()
+            with open(HIGH_SCORES_FILE) as record_file: # Open a file to store highest score
+                records = record_file.readlines() 
         except IOError:
             open(HIGH_SCORES_FILE, "w+").close()
             records = []
 
         records_sorted = []
         for record in records:
-            record = record.strip("\n").split(",")
+            record = record.strip("\n").split(",")  # Sort out every record with newline and commar
             records_sorted.append((str(record[0]), strtotime(record[1])))
 
         records_sorted.append((player_name, self._time_count))
