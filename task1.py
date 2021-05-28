@@ -267,4 +267,21 @@ class BasicGraphicalInterface:
         else:
             self._move(direction)
 
+    def _move(self, direction):
+        """
+        Handles moving the player and redrawing the game.
+        Args:
+            direction: direction
+
+        Returns:
+
+        """
+        if direction in DIRECTIONS:
+            offset = self._game.direction_to_offset(direction)
+            if offset is not None:
+                self._game.move_player(offset)
+            self.draw(self._game)
+
+            self.quit_game()
+
     
