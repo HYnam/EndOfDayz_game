@@ -284,4 +284,6 @@ class BasicGraphicalInterface:
 
             self.quit_game()
 
-    
+    def is_fire(self):
+        inventory = self._game.get_player().get_inventory()
+        return inventory.has_active(CROSSBOW)
